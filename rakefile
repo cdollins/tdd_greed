@@ -1,8 +1,24 @@
-task :default => [:test]
+require 'rake'
+require 'rake/testtask'
+require 'rcov'
+require 'rcov/rcovtask'
 
-  task :test do
-    ruby "test/greed/score_test.rb"
-    ruby "test/greed/CompetentPlayerTest.rb"
+task :default => "test:units"
+
+namespace :test do
+  Rake::TestTask.new do |t|
+    t.name = "units"
+    t.test_files = FileList['test/greed/*test.rb']
   end
+end
 
-
+namespace :rcov do
+  Rcov::RcovTask.new do |t|
+    t.name = :"all"
+    t.libs << 'test'
+    t.test_files = FileList['test/greed/*test.rb']
+    t.verbose = true
+    t.rcov_opts = ['-x', '^config/boot',
+		   '--rails', '--sort', 'coverage']
+  end
+end
